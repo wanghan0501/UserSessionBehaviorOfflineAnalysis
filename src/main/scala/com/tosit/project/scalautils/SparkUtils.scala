@@ -23,7 +23,7 @@ object SparkUtils {
             List(
                 StructField("date", StringType, true),
                 StructField("user_id", LongType, true),
-                StructField("sessiopn_id", StringType, true),
+                StructField("session_id", StringType, true),
                 StructField("page_id", LongType, true),
                 StructField("action_date",StringType,true),
                 StructField("action_time", StringType, true),

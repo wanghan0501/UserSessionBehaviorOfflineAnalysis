@@ -12,7 +12,7 @@ public class StringUtils {
      * @param str 字符串
      * @return String
      */
-    public static String trimComa(String str) {
+    public static String trimComma(String str) {
         if (str.startsWith(",")) {
             str = str.substring(1);
         }

@@ -1,14 +1,12 @@
 package com.tosit.project.session
 
-import com.tosit.project.conf.ConfigurationManager
 import com.tosit.project.constants.Constants
 import com.tosit.project.dao.factory.DAOFActory
 import com.tosit.project.exception.TaskException
-import com.tosit.project.javautils.ParamUtils
-import com.tosit.project.scalautils.SparkUtils
+import com.tosit.project.javautils.{ParamUtils, StringUtils}
+import com.tosit.project.scalautils.{AnalyzeUnits, SparkUtils}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.json.JSONObject
 
@@ -26,7 +24,7 @@ object UserVisitAnalyzeService {
         // spark上下文环境
         val sc = new SparkContext(conf)
         // SQL上下文环境
-        val sqlContext = getSQLContext(sc)
+        val sqlContext = AnalyzeUnits.getSQLContext(sc)
         // 加载本地session访问日志测试数据
         SparkUtils.loadLocalTestDataToTmpTable(sc, sqlContext)
         // 创建DAO组件,DAO组件是用来操作数据库的
@@ -42,52 +40,49 @@ object UserVisitAnalyzeService {
         //        val taskParam = new JSONObject(task.getTaskParam)
         //
         //        val actionRdd = getActionRddByDateRange(sqlContext, taskParam)
+
+        val param = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"]}")
+        val actionRddByDateRange = AnalyzeUnits.getActionRddByDateRange(sqlContext, param)
         sc.stop()
     }
 
-    /**
-      * 加载SQL上下环境
-      *
-      * @param sc
-      * @return
-      */
-    def getSQLContext(sc: SparkContext): SQLContext = {
-        val local = ConfigurationManager.getBoolean(Constants.SPARK_LOCAL)
-        if (local) new SQLContext(sc) else new HiveContext(sc)
-    }
 
-    /**
-      * 按照访问日期筛选用户访问行为
-      *
-      * @param sqlContext
-      * @param json
-      * @return
-      */
-    def getActionRddByDateRange(sqlContext: SQLContext, json: JSONObject): RDD[Row] = {
-        val startDate = ParamUtils.getParam(json, Constants.PARAM_START_DATE)
-        val endDate = ParamUtils.getParam(json, Constants.PARAM_END_DATE)
-        val table = Constants.TABLE_USER_VISIT_ACTION
-        val sql = "select* from " + table + " where date >= \"" + startDate + "\" and date <= \"" + endDate + "\""
-        sqlContext.sql(sql).rdd
-    }
+    def aggregateBySession(sQLContext: SQLContext, actionRddByDateRange: RDD[Row]) = {
+        // sessionidRddWithAction 形为(session_id,RDD[Row])
+        val sessionIdRddWithAction = actionRddByDateRange.map(s => (s.getString(2), s)).groupByKey()
+        // userIdRddWithSearchWordsAndClickCateroryIds 形为(user_id,session_id|searchWords|clickCateroryIds)
+        val userIdRddWithSearchWordsAndClickCateroryIds = sessionIdRddWithAction.map(f = s => {
+            val session_id: String = s._1
+            // 用户ID
+            var user_id: Long = 0L
+            // 搜索关键字的集合
+            var searchWords: String = null
+            // 点击分类ID的集合
+            var clickCateroryIds: String = null
 
-    /**
-      * 按照用户年龄段筛选用户
-      *
-      * @param sQLContext
-      * @param json
-      * @return
-      */
-    def getActionRddByAgeRange(sQLContext: SQLContext, json: JSONObject): RDD[Row] = {
-        val startAge = ParamUtils.getParam(json, Constants.PARAM_START_AGE)
-        val endAge = ParamUtils.getParam(json, Constants.PARAM_END_AGE)
-        val table = Constants.TABLE_USER_INFO
-        val sql = "select* from " + table + " where age >= \"" + startAge + "\" and age <= \"" + endAge + "\""
-        sQLContext.sql(sql).rdd
-    }
+            val iterator = s._2.iterator
+            while (iterator.hasNext) {
+                val row = iterator.next()
+                val searchWord = row.getString(6)
+                val clickCateroryId = row.getString(7)
+                if (searchWord != null && !searchWords.contains(searchWord)) {
+                    searchWords += (searchWord + ",")
+                }
+                if (clickCateroryId != null && !clickCateroryIds.contains(clickCateroryId)) {
+                    clickCateroryIds += (clickCateroryId + ",")
+                }
+            }
 
-    //    def aggregateBySession(sQLContext: SQLContext, actionRddByDateRange: RDD[Row]): RDD[(String, String)] = {
-    //        val actionRdd = actionRddByDateRange.map(t => (t.getString(2), t)).groupByKey()
-    //
-    //    }
+            searchWords = StringUtils.trimComma(searchWords)
+            clickCateroryIds = StringUtils.trimComma(clickCateroryIds)
+
+            val userAggregateInfo = Constants.FIELD_SESSION_ID + "=" + session_id + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_SEARCH_KEYWORDS + "=" + searchWords + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCateroryIds + Constants.VALUE_SEPARATOR
+
+            Some(user_id, userAggregateInfo)
+        })
+
+
+    }
 }

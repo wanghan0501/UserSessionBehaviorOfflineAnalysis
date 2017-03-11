@@ -1,6 +1,5 @@
 .idea
-
 /target/
-/src/main/resources/my.properties
-/SciBigData.iml
 /click.log
+/product.txt
+/user.txt

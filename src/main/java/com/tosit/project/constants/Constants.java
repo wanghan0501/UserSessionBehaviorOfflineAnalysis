@@ -45,11 +45,17 @@ public interface Constants {
     String PARAM_START_AGE = "startAge";
     String PARAM_END_AGE = "endAge";
     //"???
-    String PARAM_PROFESSIONALS = "startAge";
-    String PARAM_CITYS = "startAge";
-    String PARAM_SEX = "startAge";
-    String PARAM_KEYWORDS = "keywords";
-    String PARAM_CATEGORY_ID = "categoryIDs";
+    String PARAM_PROFESSIONALS = "";
+    String PARAM_CITYS = "";
+    String PARAM_SEX = "isMale";
+    String PARAM_KEYWORDS = "";
+    String PARAM_CATEGORY_ID = "";
 
+    // 表结构
+    String PARAM_USER_ID = "user_id";
+    String PARAM_SESSION_ID = "session_id";
+
+    // 分割符
+    String VALUE_SEPARATOR = "|";
 
 }
