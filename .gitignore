@@ -1,3 +1,7 @@
 .idea
 ScuBigData.iml
 
+/target/
+/src/main/resources/my.properties
+/SciBigData.iml
+/click.log

@@ -1,7 +1,10 @@
 package com.tosit.project.dao.impl;
 
 /**
- * Created by mac on 2017/3/11.
+ * 配置加载管理类
+ * <p>
+ * Created by Wanghan on 2017/3/11.
+ * Copyright © Wanghan SCU. All Rights Reserved
  */
 
 import com.tosit.project.dao.ITaskDAO;
@@ -10,23 +13,24 @@ import com.tosit.project.jdbc.JDBCHelper;
 
 import java.sql.ResultSet;
 
-a
-
 public class TaskDAOImpl implements ITaskDAO {
-
-    @Override
-    public Task findByID(long taskid) {
+    /**
+     * 构造并返回TaskDAO实例
+     *
+     * @param taskId
+     * @return
+     */
+    public Task findById(long taskId) {
         final Task task = new Task();
         String sql = "select * from task where task_id=?";
-        Object[] params = {taskid};
+        Object[] params = {taskId};
 
         JDBCHelper jdbcHelper = JDBCHelper.getInstanse();
         jdbcHelper.executeQuery(sql, params, new JDBCHelper.QueryCallback() {
-            @Override
             public void process(ResultSet rs) throws Exception {
                 if (rs.next()) {
-                    long taskid = rs.getLong(1);
-                    task.setTaskid(taskid);
+                    long taskId = rs.getLong(1);
+                    task.setTaskId(taskId);
                 }
             }
         });

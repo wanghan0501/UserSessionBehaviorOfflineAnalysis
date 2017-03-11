@@ -1,7 +1,10 @@
 package com.tosit.project.constants;
 
 /**
- * Created by mac on 2017/3/11.
+ * 配置常量接口类
+ * <p>
+ * Created by Wanghan on 2017/3/11.
+ * Copyright © Wanghan SCU. All Rights Reserved
  */
 
 public interface Constants {

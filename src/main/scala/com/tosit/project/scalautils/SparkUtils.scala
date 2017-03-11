@@ -25,10 +25,11 @@ object SparkUtils {
                 StructField("user_id", LongType, true),
                 StructField("sessiopn_id", StringType, true),
                 StructField("page_id", LongType, true),
+                StructField("action_date",StringType,true),
                 StructField("action_time", StringType, true),
                 StructField("search_keyword", StringType, true),
-                StructField("click_category_id", LongType, true),
-                StructField("click_product_id", LongType, true),
+                StructField("click_category_id", StringType, true),
+                StructField("click_product_id", StringType, true),
                 StructField("order_category_ids", StringType, true),
                 StructField("order_product_ids", StringType, true),
                 StructField("pay_category_ids", StringType, true),
@@ -42,8 +43,8 @@ object SparkUtils {
         val sessionRDD = sc.textFile(session_path).map(_.split(" "))
         //将RDD映射成rowRDD
         val sessionrowRDD = sessionRDD.map(s => Row(s(0).trim, s(1).toLong, s(2).trim,
-            s(3).toLong, s(4).trim, s(5).trim, s(6).toLong, s(7).toLong, s(8).trim,
-            s(9).trim, s(10).trim, s(11).trim, s(12).toLong))
+            s(3).toLong, s(4).trim, s(5).trim, s(6).trim, s(7).trim, s(8).trim,
+            s(9).trim, s(10).trim, s(11).trim, s(12).trim,s(13).toLong))
         //import sqlContext.implicits._
 
         //将schema信息应用到rowRDD上
@@ -51,7 +52,6 @@ object SparkUtils {
 
         //注册临时sessionAction表
         sessionDataFrame.registerTempTable(Constants.TABLE_USER_VISIT_ACTION)
-
 
         //定义用户数据schema
         val userschema = StructType(
@@ -93,5 +93,4 @@ object SparkUtils {
 
 
     }
-
 }

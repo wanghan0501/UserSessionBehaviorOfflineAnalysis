@@ -3,14 +3,17 @@ package com.tosit.project.domain;
 import java.io.Serializable;
 
 /**
- * Created by mac on 2017/3/11.
+ * 任务类
+ * <p>
+ * Created by Wanghan on 2017/3/11.
+ * Copyright © Wanghan SCU. All Rights Reserved
  */
 
 public class Task implements Serializable {
 
     private static final long serialVersinUID = 351877796426921776L;
 
-    private long taskid;
+    private long taskId;
     private String taskName;
     private String createTime;
     private String startTime;
@@ -19,14 +22,16 @@ public class Task implements Serializable {
     private String taskStatus;
     private String taskParam;
 
-    public static long getSerialVersinUID() {return serialVersinUID;}
-
-    public long getTaskid() {
-        return taskid;
+    public static long getSerialVersinUID() {
+        return serialVersinUID;
     }
 
-    public void setTaskid(long taskid) {
-        this.taskid = taskid;
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
     public String getTaskName() {
