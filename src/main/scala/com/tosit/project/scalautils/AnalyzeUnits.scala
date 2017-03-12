@@ -7,7 +7,6 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.hive.HiveContext
-import org.apache.spark.sql.types.LongType
 import org.json.JSONObject
 
 /**
@@ -64,5 +63,18 @@ object AnalyzeUnits {
         val table = Constants.TABLE_USER_INFO
         val sql = "select * from " + table
         sQLContext.sql(sql).rdd.map(s => (s.getLong(0), s))
+    }
+
+    /**
+      * 根据商品ID返回商品信息
+      *
+      * @param sQLContext
+      * @param category_id
+      * @return
+      */
+    def getProductByCategoryId(sQLContext: SQLContext, category_id: String): RDD[Row] = {
+        val table = Constants.TABLE_PRODUCT_INFO
+        val sql = "select * from " + table + " where product_id = " + category_id + " "
+        sQLContext.sql(sql).rdd
     }
 }

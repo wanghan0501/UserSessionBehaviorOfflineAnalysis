@@ -50,39 +50,61 @@ object UserVisitAnalyzeService {
     def aggregateBySession(sQLContext: SQLContext, actionRddByDateRange: RDD[Row]) = {
         // sessionidRddWithAction 形为(session_id,RDD[Row])
         val sessionIdRddWithAction = actionRddByDateRange.map(s => (s.getString(2), s)).groupByKey()
-        // userIdRddWithSearchWordsAndClickCateroryIds 形为(user_id,session_id|searchWords|clickCateroryIds)
-        val userIdRddWithSearchWordsAndClickCateroryIds = sessionIdRddWithAction.map(f = s => {
+        // userIdRddWithSearchWordsAndClickCategoryIds 形为(user_id,session_id|searchWords|clickCategoryIds)
+        val userIdRddWithSearchWordsAndClickCategoryIds = sessionIdRddWithAction.map(f = s => {
             val session_id: String = s._1
             // 用户ID
             var user_id: Long = 0L
             // 搜索关键字的集合
             var searchWords: String = null
             // 点击分类ID的集合
-            var clickCateroryIds: String = null
+            var clickCategoryIds: String = null
 
             val iterator = s._2.iterator
             while (iterator.hasNext) {
                 val row = iterator.next()
+                user_id = row.getLong(1)
                 val searchWord = row.getString(6)
-                val clickCateroryId = row.getString(7)
+                val clickCategoryId = row.getString(7)
                 if (searchWord != null && !searchWords.contains(searchWord)) {
                     searchWords += (searchWord + ",")
                 }
-                if (clickCateroryId != null && !clickCateroryIds.contains(clickCateroryId)) {
-                    clickCateroryIds += (clickCateroryId + ",")
+                if (clickCategoryId != null && !clickCategoryIds.contains(clickCategoryId)) {
+                    clickCategoryIds += (clickCategoryId + ",")
                 }
             }
 
             searchWords = StringUtils.trimComma(searchWords)
-            clickCateroryIds = StringUtils.trimComma(clickCateroryIds)
+            clickCategoryIds = StringUtils.trimComma(clickCategoryIds)
 
             val userAggregateInfo = Constants.FIELD_SESSION_ID + "=" + session_id + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_SEARCH_KEYWORDS + "=" + searchWords + Constants.VALUE_SEPARATOR +
-                Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCateroryIds + Constants.VALUE_SEPARATOR
+                Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds + Constants.VALUE_SEPARATOR
 
-            Some(user_id, userAggregateInfo)
+            (user_id, userAggregateInfo)
         })
 
+        // userInfo形如(user_id,RDD[Row])
+        val userInfo = AnalyzeUnits.getUserInfo(sQLContext)
+        val userWithSessionInfoRdd = userInfo.join(userIdRddWithSearchWordsAndClickCategoryIds)
+
+        userWithSessionInfoRdd.map(t => {
+            val userInfo = t._2._2
+            val userAggregateInfo = t._2._1
+            val session_id = StringUtils.getFieldFromConcatString(userInfo, Constants.VALUE_SEPARATOR,
+                Constants.FIELD_SESSION_ID)
+            val age = userAggregateInfo.getInt(3)
+            val professional = userAggregateInfo.getString(4)
+            val city = userAggregateInfo.getString(5)
+            val sex = userAggregateInfo.getString(6)
+
+            val aggregateInfo = userAggregateInfo + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_AGE + "=" + age + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_PROFESSIONAL + "=" + professional + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_CITY + "=" + city + Constants.VALUE_SEPARATOR +
+                Constants.FIELD_SEX + "=" + sex
+            (session_id, aggregateInfo)
+        })
 
     }
 }
