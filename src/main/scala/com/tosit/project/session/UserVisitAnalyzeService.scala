@@ -2,7 +2,7 @@ package com.tosit.project.session
 
 import com.tosit.project.constants.Constants
 import com.tosit.project.dao.factory.DAOFActory
-import com.tosit.project.exception.TaskException
+import com.tosit.project.exception.{StringSepatorException, TaskException}
 import com.tosit.project.javautils.{ParamUtils, StringUtils}
 import com.tosit.project.scalautils.{AnalyzeUnits, SparkUtils}
 import org.apache.spark.rdd.RDD
@@ -43,44 +43,53 @@ object UserVisitAnalyzeService {
 
         val param = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"]}")
         val actionRddByDateRange = AnalyzeUnits.getActionRddByDateRange(sqlContext, param)
+        val res = aggregateBySession(sqlContext, actionRddByDateRange).collect().toBuffer
+        print(res)
         sc.stop()
     }
 
 
+    /**
+      * 按照session聚合,返回值形如(sessionid,sessionid=value|searchword=value|clickcaterory=value|
+      * age=value|professional=value|city=value|sex=value)
+      *
+      * @param sQLContext
+      * @param actionRddByDateRange
+      * @return
+      */
     def aggregateBySession(sQLContext: SQLContext, actionRddByDateRange: RDD[Row]) = {
         // sessionidRddWithAction 形为(session_id,RDD[Row])
-        val sessionIdRddWithAction = actionRddByDateRange.map(s => (s.getString(2), s)).groupByKey()
+        val sessionIdRddWithAction = actionRddByDateRange.map(tuple => (tuple.getString(2), tuple)).groupByKey()
+
         // userIdRddWithSearchWordsAndClickCategoryIds 形为(user_id,session_id|searchWords|clickCategoryIds)
-        val userIdRddWithSearchWordsAndClickCategoryIds = sessionIdRddWithAction.map(f = s => {
+        val userIdRddWithSearchWordsAndClickCategoryIds = sessionIdRddWithAction.map(s => {
             val session_id: String = s._1
             // 用户ID
             var user_id: Long = 0L
             // 搜索关键字的集合
-            var searchWords: String = null
+            var searchWords: String = ""
             // 点击分类ID的集合
-            var clickCategoryIds: String = null
+            var clickCategoryIds: String = ""
 
             val iterator = s._2.iterator
             while (iterator.hasNext) {
                 val row = iterator.next()
                 user_id = row.getLong(1)
-                val searchWord = row.getString(6)
-                val clickCategoryId = row.getString(7)
-                if (searchWord != null && !searchWords.contains(searchWord)) {
+                val searchWord = row.getString(6).trim
+                val clickCategoryId = row.getString(7).trim
+                if (searchWord != "null" && !searchWords.contains(searchWord)) {
                     searchWords += (searchWord + ",")
                 }
-                if (clickCategoryId != null && !clickCategoryIds.contains(clickCategoryId)) {
+                if (clickCategoryId != "null" && !clickCategoryIds.contains(clickCategoryId)) {
                     clickCategoryIds += (clickCategoryId + ",")
                 }
             }
 
             searchWords = StringUtils.trimComma(searchWords)
             clickCategoryIds = StringUtils.trimComma(clickCategoryIds)
-
             val userAggregateInfo = Constants.FIELD_SESSION_ID + "=" + session_id + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_SEARCH_KEYWORDS + "=" + searchWords + Constants.VALUE_SEPARATOR +
-                Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds + Constants.VALUE_SEPARATOR
-
+                Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds
             (user_id, userAggregateInfo)
         })
 
@@ -89,15 +98,15 @@ object UserVisitAnalyzeService {
         val userWithSessionInfoRdd = userInfo.join(userIdRddWithSearchWordsAndClickCategoryIds)
 
         userWithSessionInfoRdd.map(t => {
-            val userInfo = t._2._2
-            val userAggregateInfo = t._2._1
-            val session_id = StringUtils.getFieldFromConcatString(userInfo, Constants.VALUE_SEPARATOR,
-                Constants.FIELD_SESSION_ID)
-            val age = userAggregateInfo.getInt(3)
-            val professional = userAggregateInfo.getString(4)
-            val city = userAggregateInfo.getString(5)
-            val sex = userAggregateInfo.getString(6)
+            val userAggregateInfo = t._2._2
+            val userInfo = t._2._1
+            val session_id = StringUtils.getFieldFromConcatString(userAggregateInfo, "\\|", Constants.FIELD_SESSION_ID)
+            val age = userInfo.getInt(3)
+            val professional = userInfo.getString(4)
+            val city = userInfo.getString(5)
+            val sex = userInfo.getString(6)
 
+            // 形如(sessionid,sessionid=value|searchword=value|clickcaterory=value|age=value|professional=value|city=value|sex=value)
             val aggregateInfo = userAggregateInfo + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_AGE + "=" + age + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_PROFESSIONAL + "=" + professional + Constants.VALUE_SEPARATOR +

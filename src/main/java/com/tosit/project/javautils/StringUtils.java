@@ -1,5 +1,7 @@
 package com.tosit.project.javautils;
 
+import com.tosit.project.exception.StringSepatorException;
+
 /**
  * Created by mac on 2017/3/11.
  */
@@ -29,22 +31,24 @@ public class StringUtils {
      * @param str       字符串
      * @param delimiter 分隔符
      * @param field     指定的字段
-     * @return String
+     * @return
+     * @throws StringSepatorException
      */
     public static String getFieldFromConcatString(String str, String delimiter, String field) {
 
         try {
             String[] fileds = str.split(delimiter);
-
-            for (String concatFiled : fileds) {
-                if (concatFiled.split("=").length == 2) {
-                    String fieldName = concatFiled.split("=")[0];
-                    String fieldValue = concatFiled.split("=")[1];
+            System.out.println(fileds.length);
+            for (String filed : fileds) {
+                if (filed.split("=").length == 2) {
+                    String fieldName = filed.split("=")[0];
+                    String fieldValue = filed.split("=")[1];
                     if (fieldName.equals(field)) {
                         return fieldValue;
                     }
                 }
             }
+            throw new StringSepatorException();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +67,6 @@ public class StringUtils {
      * @return String
      */
     public static String setFieldInConcatString(String str, String delimiter, String field, String newfiledValue) {
-
 
         String[] fields = str.split(delimiter);
         for (int i = 0; i < fields.length; i++) {
@@ -86,6 +89,5 @@ public class StringUtils {
 
         return buffer.toString();
     }
-
 }
 
