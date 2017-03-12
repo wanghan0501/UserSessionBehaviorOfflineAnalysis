@@ -1,30 +1,18 @@
 package com.tosit.project.scalautils
 
-import com.tosit.project.conf.ConfigurationManager
 import com.tosit.project.constants.Constants
 import com.tosit.project.javautils.ParamUtils
-import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.sql.hive.HiveContext
 import org.json.JSONObject
 
 /**
+  * 辅助数据分析工具对象
+  *
   * Created by Wanghan on 2017/3/11.
   * Copyright © Wanghan SCU. All Rights Reserved
   */
-object AnalyzeUnits {
-    /**
-      * 加载SQL上下环境
-      *
-      * @param sc
-      * @return
-      */
-    def getSQLContext(sc: SparkContext): SQLContext = {
-        val local = ConfigurationManager.getBoolean(Constants.SPARK_LOCAL)
-        if (local) new SQLContext(sc) else new HiveContext(sc)
-    }
-
+object AnalyzeHelperUnits {
     /**
       * 按照访问日期筛选用户访问行为
       *
@@ -33,10 +21,10 @@ object AnalyzeUnits {
       * @return
       */
     def getActionRddByDateRange(sqlContext: SQLContext, json: JSONObject): RDD[Row] = {
-        val startDate = ParamUtils.getParam(json, Constants.PARAM_START_DATE)
-        val endDate = ParamUtils.getParam(json, Constants.PARAM_END_DATE)
+        val startDate = ParamUtils.getSingleValue(json, Constants.PARAM_START_DATE)
+        val endDate = ParamUtils.getSingleValue(json, Constants.PARAM_END_DATE)
         val table = Constants.TABLE_USER_VISIT_ACTION
-        val sql = "select * from " + table + " where date >= \"" + startDate + "\" and date <= \"" + endDate + "\""
+        val sql = "SELECT * FROM " + table + " WHERE date >= \"" + startDate + "\" AND date <= \"" + endDate + "\""
         sqlContext.sql(sql).rdd
     }
 
@@ -49,7 +37,7 @@ object AnalyzeUnits {
       */
     def getUserInfoWithUserID(sQLContext: SQLContext, user_id: Long): RDD[Row] = {
         val table = Constants.TABLE_USER_INFO
-        val sql = "select * from " + table + " where user_id = " + user_id + " "
+        val sql = "SELECT * FROM " + table + " WHERE user_id = " + user_id
         sQLContext.sql(sql).rdd
     }
 
@@ -61,7 +49,7 @@ object AnalyzeUnits {
       */
     def getUserInfo(sQLContext: SQLContext): RDD[(Long, Row)] = {
         val table = Constants.TABLE_USER_INFO
-        val sql = "select * from " + table
+        val sql = "SELECT * FROM " + table
         sQLContext.sql(sql).rdd.map(s => (s.getLong(0), s))
     }
 
@@ -74,7 +62,7 @@ object AnalyzeUnits {
       */
     def getProductByCategoryId(sQLContext: SQLContext, category_id: String): RDD[Row] = {
         val table = Constants.TABLE_PRODUCT_INFO
-        val sql = "select * from " + table + " where product_id = " + category_id + " "
+        val sql = "SELECT * FROM " + table + " WHERE product_id = " + category_id
         sQLContext.sql(sql).rdd
     }
 }

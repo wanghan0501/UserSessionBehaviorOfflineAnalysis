@@ -2,12 +2,10 @@ package com.tosit.project.session
 
 import com.tosit.project.constants.Constants
 import com.tosit.project.dao.factory.DAOFActory
-import com.tosit.project.exception.{StringSepatorException, TaskException}
 import com.tosit.project.javautils.{ParamUtils, StringUtils}
-import com.tosit.project.scalautils.{AnalyzeUnits, SparkUtils}
+import com.tosit.project.scalautils.{AnalyzeHelperUnits, InitUnits, SparkUtils}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.{SparkConf, SparkContext}
 import org.json.JSONObject
 
 
@@ -19,14 +17,12 @@ import org.json.JSONObject
   */
 object UserVisitAnalyzeService {
     def main(args: Array[String]): Unit = {
-        // spark配置文件
-        val conf = new SparkConf().setAppName(Constants.SPARK_APP_NAME_SESSION).setMaster("local[2]")
-        // spark上下文环境
-        val sc = new SparkContext(conf)
-        // SQL上下文环境
-        val sqlContext = AnalyzeUnits.getSQLContext(sc)
+        // 初始化spark环境
+        val context = InitUnits.initSparkContext()
+        val sc = context._1
+        val sQLContext = context._2
         // 加载本地session访问日志测试数据
-        SparkUtils.loadLocalTestDataToTmpTable(sc, sqlContext)
+        SparkUtils.loadLocalTestDataToTmpTable(sc, sQLContext)
         // 创建DAO组件,DAO组件是用来操作数据库的
         //val taskDao = DAOFActory.getTaskDAO()
         // 通过任务常量名来获取任务ID
@@ -42,8 +38,8 @@ object UserVisitAnalyzeService {
         //        val actionRdd = getActionRddByDateRange(sqlContext, taskParam)
 
         val param = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"]}")
-        val actionRddByDateRange = AnalyzeUnits.getActionRddByDateRange(sqlContext, param)
-        val res = aggregateBySession(sqlContext, actionRddByDateRange).collect().toBuffer
+        val actionRddByDateRange = AnalyzeHelperUnits.getActionRddByDateRange(sQLContext, param)
+        val res = aggregateBySession(sQLContext, actionRddByDateRange).collect().toBuffer
         print(res)
         sc.stop()
     }
@@ -94,13 +90,14 @@ object UserVisitAnalyzeService {
         })
 
         // userInfo形如(user_id,RDD[Row])
-        val userInfo = AnalyzeUnits.getUserInfo(sQLContext)
+        val userInfo = AnalyzeHelperUnits.getUserInfo(sQLContext)
         val userWithSessionInfoRdd = userInfo.join(userIdRddWithSearchWordsAndClickCategoryIds)
 
         userWithSessionInfoRdd.map(t => {
             val userAggregateInfo = t._2._2
             val userInfo = t._2._1
-            val session_id = StringUtils.getFieldFromConcatString(userAggregateInfo, "\\|", Constants.FIELD_SESSION_ID)
+            val session_id = StringUtils.getFieldFromConcatString(userAggregateInfo, Constants.REGULAR_VALUE_SEPARATOR,
+                Constants.FIELD_SESSION_ID)
             val age = userInfo.getInt(3)
             val professional = userInfo.getString(4)
             val city = userInfo.getString(5)
@@ -114,6 +111,42 @@ object UserVisitAnalyzeService {
                 Constants.FIELD_SEX + "=" + sex
             (session_id, aggregateInfo)
         })
-
     }
+
+//    def aggregateByRequirement(sQLContext: SQLContext, json: JSONObject): RDD[(String, String)] = {
+//        // 解析json值，获得用户的查询参数
+//        val startAge = ParamUtils.getSingleValue(json, Constants.PARAM_START_AGE)
+//        val endAge = ParamUtils.getSingleValue(json, Constants.PARAM_END_AGE)
+//        val professionals = ParamUtils.getMultipleValues(json, Constants.PARAM_PROFESSIONALS)
+//        val citys = ParamUtils.getMultipleValues(json, Constants.PARAM_CITYS)
+//        val sex = ParamUtils.getMultipleValues(json, Constants.PARAM_SEX)
+//        val searchWords = ParamUtils.getMultipleValues(json, Constants.PARAM_SEARCH_WORDS)
+//        val categoryIds = ParamUtils.getMultipleValues(json, Constants.PARAM_CATEGORY_IDS)
+//
+//        // 准备sql查询语句
+//        var sql: String = ""
+//        if (startAge != null) sql += (" age >= " + startAge + " AND")
+//        if (endAge != null) sql += (" age <= " + endAge + " AND")
+//        if (professionals != null) {
+//            val iterator = professionals.iterator
+//            while (iterator.hasNext) {
+//                val currentProfessional = iterator.next()
+//                sql += (" professional = " + currentProfessional + " OR")
+//            }
+//        }
+//        if (citys != null) {
+//            val iterator = citys.iterator
+//            while (iterator.hasNext) {
+//                val currentCity = iterator.next()
+//                sql += (" city = " + currentCity + " OR")
+//            }
+//        }
+//        if (sex != null) {
+//            val iterator = citys.iterator
+//            while (iterator.hasNext) {
+//                val currentSex = iterator.next()
+//                sql += (" sex = " + currentSex + " OR")
+//            }
+//        }
+//    }
 }

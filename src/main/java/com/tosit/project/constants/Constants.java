@@ -10,6 +10,9 @@ package com.tosit.project.constants;
 public interface Constants {
 
     String SPARK_APP_NAME_SESSION = "UserVisitSessionAnalyzeSpark";
+    String SPARK_MASTER = "local[2]";
+    String SPARK_LOCAL = "spark.local";
+
     String TABLE_USER_VISIT_ACTION = "user_visit_action";
     String TABLE_USER_INFO = "user_info";
     String TABLE_PRODUCT_INFO = "product_info";
@@ -32,10 +35,9 @@ public interface Constants {
     String JDBC_URL_PROD = "";
     String JDBC_PASSWORD_PROD = "";
 
-    String SPARK_LOCAL = "spark.local";
     String DBC_DATASOURCE_SIZE = "jdbc.datasource.size";
 
-    String SPARK_LOCAL_SESSION_TASKID = "spark.local.taskid.session";
+    String LOCAL_SESSION_TASKID = "spark.local.taskid.session";
     String LOCAL_SESSION_DATA_PATH = "spark.local.session.data.path";
     String LOCAL_USER_DATA_PATH = "spark.local.user.data.path";
     String LOCAL_PRODUCT_DATA_PATH = "spark.local.product.data.path";
@@ -44,12 +46,12 @@ public interface Constants {
     String PARAM_END_DATE = "endDate";
     String PARAM_START_AGE = "startAge";
     String PARAM_END_AGE = "endAge";
-    //"???
-    String PARAM_PROFESSIONALS = "";
-    String PARAM_CITYS = "";
-    String PARAM_SEX = "isMale";
-    String PARAM_KEYWORDS = "";
-    String PARAM_CATEGORY_ID = "";
+
+    String PARAM_PROFESSIONALS = "professionals";
+    String PARAM_CITYS = "citys";
+    String PARAM_SEX = "sex";
+    String PARAM_SEARCH_WORDS = "searchWords";
+    String PARAM_CATEGORY_IDS = "categoryIds";
 
     // 表结构
     String PARAM_USER_ID = "user_id";
@@ -57,5 +59,6 @@ public interface Constants {
 
     // 分割符
     String VALUE_SEPARATOR = "|";
+    String REGULAR_VALUE_SEPARATOR = "\\|";
 
 }

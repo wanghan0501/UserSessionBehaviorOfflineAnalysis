@@ -32,13 +32,11 @@ public class StringUtils {
      * @param delimiter 分隔符
      * @param field     指定的字段
      * @return
-     * @throws StringSepatorException
      */
     public static String getFieldFromConcatString(String str, String delimiter, String field) {
 
         try {
             String[] fileds = str.split(delimiter);
-            System.out.println(fileds.length);
             for (String filed : fileds) {
                 if (filed.split("=").length == 2) {
                     String fieldName = filed.split("=")[0];

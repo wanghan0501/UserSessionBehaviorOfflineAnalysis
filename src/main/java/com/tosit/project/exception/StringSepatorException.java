@@ -34,7 +34,7 @@ public class StringSepatorException extends Exception {
     }
 
     /**
-     * Constructs an TaskException with the specified cause
+     * Constructs an StringSepatorException with the specified cause
      *
      * @param cause
      */
