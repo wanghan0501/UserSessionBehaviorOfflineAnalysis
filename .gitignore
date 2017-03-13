@@ -1,5 +1,4 @@
-.idea
 /target/
-/click.log
-/product.txt
-/user.txt
+/data/click.log
+/data/user.txt
+/data/product.txt

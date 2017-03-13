@@ -7,7 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Created by Wanghan on 2017/3/11.
+ * 解析参数工具类
+ * <p>
+ * Created by Wanghan on 2017/3/12.
  * Copyright © Wanghan SCU. All Rights Reserved
  */
 public class ParamUtils {
@@ -23,6 +25,7 @@ public class ParamUtils {
         if (local) {
 
         }
+
         return 1L;
     }
 
@@ -47,6 +50,7 @@ public class ParamUtils {
         } catch (Exception e) {
             System.out.println(key + " doesn't exist.");
         }
+
         return null;
     }
 
@@ -74,6 +78,7 @@ public class ParamUtils {
         } catch (Exception e) {
             System.out.println(key + " doesn't exist.");
         }
+
         return null;
     }
 

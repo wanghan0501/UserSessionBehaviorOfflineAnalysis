@@ -2,6 +2,7 @@ package com.tosit.project.scalautils
 
 import com.tosit.project.conf.ConfigurationManager
 import com.tosit.project.constants.Constants
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.hive.HiveContext
@@ -14,6 +15,11 @@ import org.apache.spark.sql.hive.HiveContext
   */
 object InitUnits {
 
+    /**
+      * 初始化spark、sql环境
+      *
+      * @return
+      */
     def initSparkContext(): (SparkContext, SQLContext) = {
         // spark配置文件
         val conf = getSparkConf()
@@ -21,7 +27,10 @@ object InitUnits {
         val sc = new SparkContext(conf)
         // SQL上下文环境
         val sqlContext = getSQLContext(sc)
-        (sc,sqlContext)
+        // 设置Log等级
+        Logger.getRootLogger.setLevel(Level.INFO)
+
+        (sc, sqlContext)
     }
 
     /**

@@ -3,7 +3,10 @@ package com.tosit.project.javautils;
 import com.tosit.project.exception.StringSepatorException;
 
 /**
- * Created by mac on 2017/3/11.
+ * 字符串提取赋值工具类
+ * <p>
+ * Created by Wanghan on 2017/3/11.
+ * Copyright © Wanghan SCU. All Rights Reserved
  */
 
 public class StringUtils {
@@ -46,7 +49,6 @@ public class StringUtils {
                     }
                 }
             }
-            throw new StringSepatorException();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,22 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ed823bce-6746-4f5a-8bec-739bba9c52a2" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/click.log" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/product.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/user.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/SqlUnits.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionAggAccumulator.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionPair.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/DataUtils.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ScuBigData.iml" afterPath="$PROJECT_DIR$/ScuBigData.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tosit/project/constants/Constants.java" afterPath="$PROJECT_DIR$/src/main/java/com/tosit/project/constants/Constants.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/ParamUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/ParamUtils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/SqlUnits.java" afterPath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/SqlUnits.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/StringUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/StringUtils.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/my.properties" afterPath="$PROJECT_DIR$/src/main/resources/my.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/AnalyzeHelperUnits.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/AnalyzeHelperUnits.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/InitUnits.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/InitUnits.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionAggAccumulator.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionAggAccumulator.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionPair.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionPair.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/UserVisitAnalyzeService.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/UserVisitAnalyzeService.scala" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -35,7 +31,7 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="UserVisitAnalyzeService.scala" pinned="false" current-in-tab="true">
+      <file leaf-file-name="UserVisitAnalyzeService.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/tosit/project/session/UserVisitAnalyzeService.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="390">
@@ -43,6 +39,16 @@
               <folding>
                 <element signature="e#35#68#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -176,7 +182,6 @@
         <option value="$PROJECT_DIR$/src/test/scala/com/tosit/project/test.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/com/tosit/project/testParamUtils.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/AnalyzeUnits.scala" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/main/resources/my.properties" />
         <option value="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/ParamUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tosit/project/javautils/SqlUnits.java" />
@@ -193,6 +198,7 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/SessionPair.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/tosit/project/scalautils/AnalyzeHelperUnits.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/tosit/project/session/UserVisitAnalyzeService.scala" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -1314,7 +1320,7 @@
       <workItem from="1489232113041" duration="12363000" />
       <workItem from="1489315776100" duration="23469000" />
       <workItem from="1489374444148" duration="14051000" />
-      <workItem from="1489390191702" duration="17072000" />
+      <workItem from="1489390191702" duration="17582000" />
     </task>
     <task id="LOCAL-00001" summary="Fix">
       <created>1489203179243</created>
@@ -1376,7 +1382,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87614000" />
+    <option name="totallyTimeSpent" value="88124000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1503,13 +1509,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-catalyst_2.10/1.6.0/spark-catalyst_2.10-1.6.0.jar!/org/apache/spark/sql/catalyst/expressions/GenericRow.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-core_2.10/1.6.0/spark-core_2.10-1.6.0-sources.jar!/org/apache/spark/util/collection/CompactBuffer.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
@@ -1941,6 +1940,14 @@
           <folding>
             <element signature="e#35#68#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
