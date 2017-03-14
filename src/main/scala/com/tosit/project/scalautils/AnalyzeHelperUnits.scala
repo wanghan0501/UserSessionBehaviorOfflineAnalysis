@@ -2,7 +2,8 @@ package com.tosit.project.scalautils
 
 import com.tosit.project.constants.Constants
 import com.tosit.project.javautils.{ParamUtils, SqlUnits}
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SQLContext}
 import org.json.JSONObject
 
 
@@ -17,11 +18,10 @@ object AnalyzeHelperUnits {
     /**
       * 根据用户需求，编辑sql查询语句
       *
-      * @param sQLContext
       * @param json
       * @return
       */
-    def getSQL(sQLContext: SQLContext, json: JSONObject): (String, String) = {
+    def getSQL(json: JSONObject): (String, String) = {
         // 解析json值，获得用户的查询参数
         val startAge = ParamUtils.getSingleValue(json, Constants.PARAM_START_AGE)
         val endAge = ParamUtils.getSingleValue(json, Constants.PARAM_END_AGE)
@@ -33,16 +33,16 @@ object AnalyzeHelperUnits {
         val searchWords = ParamUtils.getMultipleValues(json, Constants.PARAM_SEARCH_WORDS)
         val categoryIds = ParamUtils.getMultipleValues(json, Constants.PARAM_CATEGORY_IDS)
 
-        // 准备sql查询uesr_Info表语句
-        var sqlUserInfo: String = ("SELECT * FROM " + Constants.TABLE_USER_INFO)
+        // 准备sql查询user_Info表语句
+        var sqlUserInfo: String = "SELECT * FROM " + Constants.TABLE_USER_INFO
         // 如果有起始年龄限定
         if (startAge != null) {
-            val currentSql = (" age >= " + startAge)
+            val currentSql = " age >= " + startAge
             sqlUserInfo = SqlUnits.concatSQL(sqlUserInfo, currentSql)
         }
         // 如果有终止年龄限定
         if (endAge != null) {
-            val currentSql = (" age <= " + endAge)
+            val currentSql = " age <= " + endAge
             sqlUserInfo = SqlUnits.concatSQL(sqlUserInfo, currentSql)
         }
         // 如果有职业限定
@@ -81,17 +81,17 @@ object AnalyzeHelperUnits {
             sqlUserInfo = SqlUnits.concatSQL(sqlUserInfo, currentSql)
         }
 
-        // 准备sql查询uesr_visit_action表语句
-        var sqlUserVisitAction: String = ("SELECT * FROM " + Constants.TABLE_USER_VISIT_ACTION)
+        // 准备sql查询user_visit_action表语句
+        var sqlUserVisitAction: String = "SELECT * FROM " + Constants.TABLE_USER_VISIT_ACTION
         // 如果有起始日期限定
         if (startDate != null) {
-            val currentSql = (" date >= \"" + startDate + "\"")
+            val currentSql = " date >= \"" + startDate + "\""
             sqlUserVisitAction = SqlUnits.concatSQL(sqlUserVisitAction, currentSql)
         }
 
         // 如果有终止日期限定
         if (endDate != null) {
-            val currentSql = (" date <= \"" + endDate + "\"")
+            val currentSql = " date <= \"" + endDate + "\""
             sqlUserVisitAction = SqlUnits.concatSQL(sqlUserVisitAction, currentSql)
         }
         // 如果有关键字限定
@@ -117,8 +117,16 @@ object AnalyzeHelperUnits {
             currentSql = SqlUnits.trimOr(currentSql)
             sqlUserVisitAction = SqlUnits.concatSQL(sqlUserVisitAction, currentSql)
         }
+//                //构造with···as···sql语句，效率较慢
+//                if (searchWords != null || categoryIds != null)
+//                    sqlUserVisitAction = SqlUnits.concatSQL(sqlUserVisitAction, Constants.TABLE_USER_VISIT_ACTION, "session_id")
 
         (sqlUserInfo, sqlUserVisitAction)
     }
 
+    def getFullSession(sqlContext: SQLContext): RDD[Row] = {
+        val table = Constants.TABLE_USER_VISIT_ACTION
+        val sql = "SELECT * FROM " + table
+        sqlContext.sql(sql).rdd
+    }
 }

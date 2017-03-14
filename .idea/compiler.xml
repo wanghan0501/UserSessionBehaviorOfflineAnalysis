@@ -6,12 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="SciBigData" />
         <module name="ScuBigData" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="SciBigData" target="1.7" />
       <module name="ScuBigData" target="1.7" />
     </bytecodeTargetLevel>
   </component>

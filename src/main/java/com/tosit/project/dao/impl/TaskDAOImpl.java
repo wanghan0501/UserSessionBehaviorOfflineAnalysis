@@ -22,7 +22,7 @@ public class TaskDAOImpl implements ITaskDAO {
      */
     public Task findById(long taskId) {
         final Task task = new Task();
-        String sql = "select * from task where task_id=?";
+        String sql = "SELECT * FROM task WHERE task_id=?";
         Object[] params = {taskId};
 
         JDBCHelper jdbcHelper = JDBCHelper.getInstanse();

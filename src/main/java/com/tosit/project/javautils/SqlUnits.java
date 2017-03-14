@@ -24,8 +24,8 @@ public class SqlUnits {
         totalSql = trimSpace(totalSql);
         if (!totalSql.contains("WHERE")) {
             totalSql += " WHERE ";
-            sqlBuilder.insert(0,totalSql);
-        }else {
+            sqlBuilder.insert(0, totalSql);
+        } else {
             sqlBuilder.insert(0, totalSql + " AND ");
         }
 
@@ -64,5 +64,24 @@ public class SqlUnits {
         }
 
         return sql;
+    }
+
+    /**
+     * 生成使用with···as···的sql语句
+     *
+     * @param withSql
+     * @param tableName
+     * @param key
+     * @return
+     */
+    public static String concatSQL(String withSql, String tableName, String key) {
+        StringBuilder sqlBuilder = new StringBuilder(withSql);
+        sqlBuilder.insert(withSql.length(), ")");
+        sqlBuilder.insert(0, "WITH T AS (");
+        String currentSql = "SELECT " + tableName + ".* FROM T," + tableName + " WHERE T." + key +
+                " = " + tableName + "." + key;
+        sqlBuilder.insert(sqlBuilder.length(), currentSql);
+
+        return sqlBuilder.toString();
     }
 }

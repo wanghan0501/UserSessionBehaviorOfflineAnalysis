@@ -1,10 +1,11 @@
 package com.tosit.project.session
 
 import java.text.SimpleDateFormat
-import java.util.{Date, NoSuchElementException}
+import java.util.{Date}
 
 import com.tosit.project.constants.Constants
 import com.tosit.project.dao.factory.DAOFActory
+import com.tosit.project.exception.TaskException
 import com.tosit.project.javautils.{ParamUtils, SqlUnits, StringUtils}
 import com.tosit.project.scalautils.{AnalyzeHelperUnits, InitUnits, SparkUtils}
 import org.apache.spark.SparkContext
@@ -27,9 +28,9 @@ object UserVisitAnalyzeService {
         val sQLContext = context._2
         // 加载本地session访问日志测试数据
         SparkUtils.loadLocalTestDataToTmpTable(sc, sQLContext)
-        // 创建DAO组件,DAO组件是用来操作数据库的
-        //val taskDao = DAOFActory.getTaskDAO()
-        // 通过任务常量名来获取任务ID
+        //        // 创建DAO组件,DAO组件是用来操作数据库的
+        //        val taskDao = DAOFActory.getTaskDAO()
+        //        // 通过任务常量名来获取任务ID
         //        val taskId = ParamUtils.getTaskIdFromArgs(args, Constants.SPARK_LOCAL_SESSION_TASKID)
         //        val task = if (taskId > 0) taskDao.findById(taskId) else null
         //        // 抛出task异常
@@ -38,30 +39,27 @@ object UserVisitAnalyzeService {
         //        }
         //        // 获取任务参数
         //        val taskParam = new JSONObject(task.getTaskParam)
-        //
-        //        val actionRdd = getActionRddByDateRange(sqlContext, taskParam)
 
-        val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"]}")
+        val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"],\"searchWords\":[\"小米5\"]}")
         println(param1.toString)
 
-        //第二问
+        //        //第二问
         //        val aggUserVisitAction = sQLContext.sql("SELECT * FROM user_visit_action WHERE ( date >= \"2017-03-06\") AND ( date <= \"2017-03-06\")").rdd
         //        val aggUserInfo = sQLContext.sql("SELECT * FROM user_info").rdd
-        //        val res = aggregateBySession(sQLContext, aggUserInfo, aggUserVisitAction)
+        //        val res = displaySession(aggUserInfo, aggUserVisitAction)
         //        print(res.collect().toBuffer)
 
         //        //第三问
-        //        aggregateByRequirement(sQLContext, param1)
-        //        val actionRddByDateRange = aggregateByRequirement(sQLContext, param1).collect().toBuffer
+        //        val actionRddByDateRange = sessionAggregateByRequirement(sQLContext, param1).collect().toBuffer
         //        println(actionRddByDateRange)
 
         //        //第四问
         //        val res = getVisitLengthAndStepLength(sc, sQLContext, param1)
         //        println(res)
-
+        //
         //        // 第五问
         //        val session = getSessionByRequirement(sQLContext, param1)
-        //        val hotProducts = getFireProduct(session).iterator
+        //        val hotProducts = getHotCategory(session).iterator
         //        for (i <- hotProducts)
         //            print(i)
 
@@ -69,15 +67,14 @@ object UserVisitAnalyzeService {
     }
 
     /**
-      * 按照session聚合,返回值形如(sessionid,sessionid=value|searchword=value|clickcaterory=value|
-      * age=value|professional=value|city=value|sex=value)
+      * 将输入的userInfo和userVisitAction按照指定形式展示出来,返回值形如(sessionid,
+      * sessionid=value|searchword=value|clickcaterory=value|age=value|professional=value|city=value|sex=value)
       *
-      * @param sQLContext
       * @param aggUserInfo
       * @param aggUserVisitAction
       * @return
       */
-    def aggregateBySession(sQLContext: SQLContext, aggUserInfo: RDD[Row], aggUserVisitAction: RDD[Row]): RDD[(String, String)] = {
+    def displaySession(aggUserInfo: RDD[Row], aggUserVisitAction: RDD[Row]): RDD[(String, String)] = {
         // sessionidRddWithAction 形为(session_id,RDD[Row])
         val sessionIdRddWithAction = aggUserVisitAction.map(tuple => (tuple.getString(2), tuple)).groupByKey()
         // userIdRddWithSearchWordsAndClickCategoryIds 形为(user_id,session_id|searchWords|clickCategoryIds)
@@ -151,7 +148,7 @@ object UserVisitAnalyzeService {
             val city = userInfo.getString(5)
             val sex = userInfo.getString(6)
 
-            // 形如(sessionid,sessionid=value|searchword=value|clickcaterory=value|age=value|professional=value|city=value|sex=value)
+            // 形如(sessionid,sessionid=value|searchword=value|clickcategory=value|age=value|professional=value|city=value|sex=value)
             val aggregateInfo = userAggregateInfo + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_AGE + "=" + age + Constants.VALUE_SEPARATOR +
                 Constants.FIELD_PROFESSIONAL + "=" + professional + Constants.VALUE_SEPARATOR +
@@ -161,20 +158,25 @@ object UserVisitAnalyzeService {
         })
     }
 
+
     /**
-      * 根据传入json参数进行类聚
+      * session根据传入json参数进行类聚,输出类型如(sessionid,sessionid=value|searchword=value|clickcaterory=value|
+      * age=value|professional=value|city=value|sex=value)
       *
       * @param sQLContext
       * @param json
       * @return
       */
-    def aggregateByRequirement(sQLContext: SQLContext, json: JSONObject): RDD[(String, String)] = {
-        val sql = AnalyzeHelperUnits.getSQL(sQLContext, json)
+    def sessionAggregateByRequirement(sQLContext: SQLContext, json: JSONObject): RDD[(String, String)] = {
+        val sql = AnalyzeHelperUnits.getSQL(json)
         val sqlUserInfo = sql._1
         val sqlUserVisitAction = sql._2
         val aggUserInfo = sQLContext.sql(sqlUserInfo).rdd
-        val aggUserVisitAction = sQLContext.sql(sqlUserVisitAction).rdd
-        aggregateBySession(sQLContext, aggUserInfo, aggUserVisitAction)
+        // 形如(sessionId,Row)
+        val partialVisitAction = sQLContext.sql(sqlUserVisitAction).rdd.map(t => (t.getString(2), t))
+        val fullVisitAction = AnalyzeHelperUnits.getFullSession(sQLContext).map(t => (t.getString(2), t))
+        val aggUserVisitAction = partialVisitAction.join(fullVisitAction).map(t => t._2._2)
+        displaySession(aggUserInfo, aggUserVisitAction)
     }
 
     /**
@@ -191,7 +193,7 @@ object UserVisitAnalyzeService {
 
         val sessionAggAccumulator = sc.accumulator("")(SessionAggAccumulator)
         // 获取session聚合信息
-        val rdd = aggregateByRequirement(sQLContext, json)
+        val rdd = sessionAggregateByRequirement(sQLContext, json)
         rdd.foreach(tuple => {
             val currentInfo = tuple._2
             // 获取访问时长
@@ -246,13 +248,17 @@ object UserVisitAnalyzeService {
       * @return
       */
     def getSessionByRequirement(sQLContext: SQLContext, jSONObject: JSONObject): RDD[Row] = {
-        val sql = AnalyzeHelperUnits.getSQL(sQLContext, jSONObject)
+        val sql = AnalyzeHelperUnits.getSQL(jSONObject)
         val sqlUserInfo = sql._1
         val sqlUserVisitAction = sql._2
-        // 形如(uesr_id,RDD)
+        // 形如(user_id,RDD)
         val aggUserInfo = sQLContext.sql(sqlUserInfo).rdd.map(t => (t.getLong(0), t))
-        // 形如(uesr_id,RDD)
-        val aggUserVisitAction = sQLContext.sql(sqlUserVisitAction).rdd.map(t => (t.getLong(1), t))
+        // 形如(sessionId,Row)
+        val partialVisitAction = sQLContext.sql(sqlUserVisitAction).rdd.map(t => (t.getString(2), t))
+        // 形如(sessionId,Row)
+        val fullVisitAction = AnalyzeHelperUnits.getFullSession(sQLContext).map(t => (t.getString(2), t))
+        // 形如(user_id,RDD)
+        val aggUserVisitAction = partialVisitAction.join(fullVisitAction).map(t => (t._2._2.getLong(1), t._2._2))
         aggUserInfo.join(aggUserVisitAction).map(t => {
             t._2._2
         })
@@ -265,9 +271,47 @@ object UserVisitAnalyzeService {
       * @param rDD
       * @return
       */
-    def getFireProduct(rDD: RDD[Row]): Array[(String, Int, Int, Int)] = {
+    def getHotCategory(rDD: RDD[Row]): Array[(String, Int, Int, Int)] = {
 
-        def getCatogeryIdAndTimes(index: Int, rDD: RDD[Row]): RDD[(String, Int)] = {
+        /**
+          * category排序构造方法
+          *
+          * @param category_id
+          * @param click_times
+          * @param order_times
+          * @param pay_times
+          */
+        class SessionPair(category_id: String, click_times: Int, order_times: Int, pay_times: Int) extends Ordered[SessionPair] with Serializable {
+            val categoryId = category_id
+            val click = click_times
+            val order = order_times
+            val pay = pay_times
+
+            /**
+              * 重载比较方法
+              *
+              * @param that
+              * @return
+              */
+            override def compare(that: SessionPair): Int = {
+                if (this.click == that.click) {
+                    if (this.order == that.order) {
+                        return this.click - that.click
+                    }
+                    return this.order - that.order
+                }
+                return this.click - that.click
+            }
+        }
+
+        /**
+          * 按照品类聚合并得到每类次数
+          *
+          * @param index
+          * @param rDD
+          * @return
+          */
+        def getCategoryIdAndTimes(index: Int, rDD: RDD[Row]): RDD[(String, Int)] = {
             // 类聚
             val aggByIndex = rDD.groupBy(x => x.get(index))
             // 统计每一品类的数量
@@ -275,12 +319,15 @@ object UserVisitAnalyzeService {
             count
         }
 
-        val rdd_click = getCatogeryIdAndTimes(7, rDD)
-        val rdd_order = getCatogeryIdAndTimes(9, rDD)
-        val rdd_pay = getCatogeryIdAndTimes(11, rDD)
-
+        // 点击品类类聚
+        val rdd_click = getCategoryIdAndTimes(7, rDD)
+        // 下单品类类聚
+        val rdd_order = getCategoryIdAndTimes(9, rDD)
+        // 支付品类类聚
+        val rdd_pay = getCategoryIdAndTimes(11, rDD)
+        // 品类全连接
         val fullRdd = rdd_click.fullOuterJoin(rdd_order).fullOuterJoin(rdd_pay)
-
+        // 利用SessionPair类排序
         val sortedFullRdd = fullRdd.map(tuple => {
             val categoryId: String = tuple._1
             val click: Int = if (tuple._2._1.isEmpty) 0 else if (tuple._2._1.get._1.isEmpty) 0 else tuple._2._1.get._1.get
@@ -289,7 +336,7 @@ object UserVisitAnalyzeService {
 
             (new SessionPair(categoryId, click, order, pay), tuple)
         }).sortByKey(false)
-
+        // 输出top品类
         sortedFullRdd.map(tuple => (tuple._1.categoryId, tuple._1.click, tuple._1.order, tuple._1.pay)).take(10)
     }
 

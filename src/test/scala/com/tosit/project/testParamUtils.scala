@@ -1,6 +1,7 @@
 package com.tosit.project
 
 import com.tosit.project.javautils.ParamUtils
+import com.tosit.project.scalautils.AnalyzeHelperUnits
 import org.json.JSONObject
 
 /**
@@ -9,12 +10,14 @@ import org.json.JSONObject
   */
 object testParamUtils {
     def main(args: Array[String]): Unit = {
-        val json = new JSONObject("{\"A\":[\"b\",\"c\"]}")
-        println(json.toString)
-        val res = ParamUtils.getMultipleValues(json, "A")
-        val iterator = res.iterator
-        while (iterator.hasNext) {
-            println(iterator.next())
-        }
+        val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"],\"searchWords\":[\"小米5\",\"小米1\"]}")
+        println(param1.toString)
+        val res = AnalyzeHelperUnits.getSQL(param1)
+        val a1 = res._1
+        val a2 = res._2
+        println(a1)
+        println(a2)
+
+
     }
 }
