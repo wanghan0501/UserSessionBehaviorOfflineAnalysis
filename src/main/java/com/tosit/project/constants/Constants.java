@@ -10,7 +10,7 @@ package com.tosit.project.constants;
 public interface Constants {
 
     String SPARK_APP_NAME_SESSION = "UserVisitSessionAnalyzeSpark";
-    String SPARK_MASTER = "local";
+    String SPARK_MASTER = "local[4]";
     String SPARK_LOCAL = "spark.local";
     String SPARK_LOCAL_SESSION_TASKID = "spark.local.taskid.session";
 
@@ -28,10 +28,10 @@ public interface Constants {
     String FIELD_STEP_LENGTH = "stepLength";
     String FIELD_AGE = "age";
 
-    String JDBC_URL = "jdbc.driver";
-    String JDBC_USER = "jdbc.driver";
+    String JDBC_URL = "jdbc.url";
+    String JDBC_USER = "jdbc.user";
     String JDBC_DRIVER = "jdbc.driver";
-    String JDBC_PASSWORD = "jdbc.driver";
+    String JDBC_PASSWORD = "jdbc.password";
     String JDBC_USER_PROD = "";
     String JDBC_URL_PROD = "";
     String JDBC_PASSWORD_PROD = "";

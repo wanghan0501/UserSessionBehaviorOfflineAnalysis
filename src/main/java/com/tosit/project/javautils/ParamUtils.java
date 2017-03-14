@@ -5,7 +5,6 @@ import com.tosit.project.constants.Constants;
 import com.tosit.project.exception.ParameterException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 /**
  * 解析参数工具类
  * <p>

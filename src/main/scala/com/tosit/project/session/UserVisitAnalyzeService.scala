@@ -1,12 +1,10 @@
 package com.tosit.project.session
 
 import java.text.SimpleDateFormat
-import java.util.{Date}
+import java.util.Date
 
 import com.tosit.project.constants.Constants
-import com.tosit.project.dao.factory.DAOFActory
-import com.tosit.project.exception.TaskException
-import com.tosit.project.javautils.{ParamUtils, SqlUnits, StringUtils}
+import com.tosit.project.javautils.StringUtils
 import com.tosit.project.scalautils.{AnalyzeHelperUnits, InitUnits, SparkUtils}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
@@ -28,6 +26,8 @@ object UserVisitAnalyzeService {
         val sQLContext = context._2
         // 加载本地session访问日志测试数据
         SparkUtils.loadLocalTestDataToTmpTable(sc, sQLContext)
+
+        //        // 需求1，连接池
         //        // 创建DAO组件,DAO组件是用来操作数据库的
         //        val taskDao = DAOFActory.getTaskDAO()
         //        // 通过任务常量名来获取任务ID
@@ -39,29 +39,30 @@ object UserVisitAnalyzeService {
         //        }
         //        // 获取任务参数
         //        val taskParam = new JSONObject(task.getTaskParam)
+        //
 
+        // 测试json
         val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"],\"searchWords\":[\"小米5\"]}")
-        println(param1.toString)
 
-        //        //第二问
+        //        // 需求二
         //        val aggUserVisitAction = sQLContext.sql("SELECT * FROM user_visit_action WHERE ( date >= \"2017-03-06\") AND ( date <= \"2017-03-06\")").rdd
         //        val aggUserInfo = sQLContext.sql("SELECT * FROM user_info").rdd
         //        val res = displaySession(aggUserInfo, aggUserVisitAction)
         //        print(res.collect().toBuffer)
 
-        //        //第三问
+        //        // 需求三
         //        val actionRddByDateRange = sessionAggregateByRequirement(sQLContext, param1).collect().toBuffer
         //        println(actionRddByDateRange)
 
-        //        //第四问
+        //        // 需求四
         //        val res = getVisitLengthAndStepLength(sc, sQLContext, param1)
         //        println(res)
         //
-        //        // 第五问
-        //        val session = getSessionByRequirement(sQLContext, param1)
-        //        val hotProducts = getHotCategory(session).iterator
-        //        for (i <- hotProducts)
-        //            print(i)
+        // 需求五
+        val session = getSessionByRequirement(sQLContext, param1)
+        val hotProducts = getHotCategory(session).iterator
+        for (i <- hotProducts)
+            print(i)
 
         sc.stop()
     }

@@ -28,7 +28,7 @@ object InitUnits {
         // SQL上下文环境
         val sqlContext = getSQLContext(sc)
         // 设置Log等级
-        Logger.getRootLogger.setLevel(Level.INFO)
+        Logger.getRootLogger.setLevel(Level.OFF)
 
         (sc, sqlContext)
     }

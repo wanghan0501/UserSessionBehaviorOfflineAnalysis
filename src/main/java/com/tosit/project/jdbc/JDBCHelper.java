@@ -145,7 +145,6 @@ public class JDBCHelper {
             }
 
             rs = pstmt.executeQuery();
-
             callback.process(rs);
         } catch (Exception e) {
             e.printStackTrace();

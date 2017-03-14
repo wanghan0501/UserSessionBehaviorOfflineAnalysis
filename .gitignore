@@ -1,4 +1,4 @@
 /target/
-/data/click.log
-/data/user.txt
-/data/product.txt
+.idea/
+data/
+
