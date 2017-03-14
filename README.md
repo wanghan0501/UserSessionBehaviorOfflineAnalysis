@@ -6,7 +6,7 @@
 通过指定taskid，从数据库查询任务相关信息，包括starttime，taskParam等，要求`通过数据库连接池的方式获取连接`，连接池在整个程序的运行过程中只有一份，且链接数量固定（Jdbc+Mysql）
 
 ## 需求2
-在指定日期范围内，按照session粒度进行数据聚合。要求聚合后的pair RDD的元素是<k:String,v:String>,	其中k=sessionid，v的格式如下：
+在指定日期范围内，按照session粒度进行数据聚合。要求聚合后的pair RDD的元素是`<k:String,v:String>`,	其中k=sessionid，v的格式如下：
 
 `sessionid=value|searchword=value|clickcaterory=value|age=value|professional=value|city=value|sex=value`
 
