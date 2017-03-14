@@ -1,6 +1,6 @@
-#ScuBigData
+#UserSessionBehaviorOfflineAnalysis
 
-四川大学拓思爱诺购物数据分析项目
+四川大学拓思爱诺用户session行为数据离线分析项目
 
 ## 需求1
 通过指定taskid，从数据库查询任务相关信息，包括starttime，taskParam等，要求`通过数据库连接池的方式获取连接`，连接池在整个程序的运行过程中只有一份，且链接数量固定（Jdbc+Mysql）
