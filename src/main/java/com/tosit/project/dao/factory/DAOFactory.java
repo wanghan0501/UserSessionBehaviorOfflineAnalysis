@@ -9,7 +9,7 @@ import com.tosit.project.dao.impl.TaskDAOImpl;
  * Created by Wanghan on 2017/3/11.
  * Copyright © Wanghan SCU. All Rights Reserved
  */
-public class DAOFActory {
+public class DAOFactory {
     /**
      * 构造并返回TaskDAO实例
      *

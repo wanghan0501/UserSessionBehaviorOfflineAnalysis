@@ -29,7 +29,7 @@ object UserVisitAnalyzeService {
 
         //        // 需求1，连接池
         //        // 创建DAO组件,DAO组件是用来操作数据库的
-        //        val taskDao = DAOFActory.getTaskDAO()
+        //        val taskDao = DAOFactory.getTaskDAO()
         //        // 通过任务常量名来获取任务ID
         //        val taskId = ParamUtils.getTaskIdFromArgs(args, Constants.SPARK_LOCAL_SESSION_TASKID)
         //        val task = if (taskId > 0) taskDao.findById(taskId) else null
@@ -39,7 +39,7 @@ object UserVisitAnalyzeService {
         //        }
         //        // 获取任务参数
         //        val taskParam = new JSONObject(task.getTaskParam)
-        //
+
 
         // 测试json
         val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"],\"searchWords\":[\"小米5\"]}")
