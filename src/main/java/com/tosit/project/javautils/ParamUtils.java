@@ -22,7 +22,7 @@ public class ParamUtils {
     public static Long getTaskIdFromArgs(String[] args, String taskType) {
         boolean local = ConfigurationManager.getBoolean(Constants.SPARK_LOCAL);
         if (local) {
-
+            return  Long.valueOf(args[0]);
         }
 
         return 1L;

@@ -49,6 +49,6 @@ public class TaskDAOImpl implements ITaskDAO {
             }
         });
 
-        return null;
+        return task;
     }
 }
