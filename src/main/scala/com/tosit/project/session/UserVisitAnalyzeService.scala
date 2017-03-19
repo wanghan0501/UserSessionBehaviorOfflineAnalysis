@@ -39,7 +39,7 @@ object UserVisitAnalyzeService {
         }
         // 获取任务参数
         val taskParam = new JSONObject(task.getTaskParam)
-
+        println(taskParam)
         // 测试json
         // val param1 = new JSONObject("{\"startDate\":[\"2017-03-06\"],\"endDate\":[\"2017-03-06\"],\"startAge\":[\"40\"],\"endAge\":[\"42\"],\"citys\":[\"city14\"],\"searchWords\":[\"小米5\"]}")
 
