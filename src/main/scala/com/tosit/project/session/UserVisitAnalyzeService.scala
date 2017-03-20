@@ -56,8 +56,8 @@ object UserVisitAnalyzeService {
                     val sql = AnalyzeHelperUnits.getSQL(taskParam)
                     val aggUserVisitAction = sQLContext.sql(sql._2).rdd
                     val aggUserInfo = sQLContext.sql(sql._1).rdd
-                    val res = displaySession(aggUserInfo, aggUserVisitAction)
-                    print(res.collect().toBuffer)
+                    val actionRddByDateRange = displaySession(aggUserInfo, aggUserVisitAction)
+                    print(actionRddByDateRange.collect().toBuffer)
                 }
 
                 /**
@@ -65,8 +65,8 @@ object UserVisitAnalyzeService {
                   * 注意：session时间范围是必选的。返回的结果RDD元素格式同上（Spark RDD + Sql）
                   */
                 case 3L => {
-                    val actionRddByDateRange = sessionAggregateByRequirement(sQLContext, taskParam).collect().toBuffer
-                    println(actionRddByDateRange)
+                    val actionRddByRequirement = sessionAggregateByRequirement(sQLContext, taskParam).collect().toBuffer
+                    println(actionRddByRequirement)
                 }
 
                 /** 需求4
