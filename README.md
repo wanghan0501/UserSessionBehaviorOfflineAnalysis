@@ -28,3 +28,9 @@
 对通过筛选条件的session，按照各个品类的点击、下单和支付次数，降序排列，获取前10个热门品类。
 
 优先级：点击，下单，支付。二次排序（Spark）
+
+
+## 其它
+以下链接是一个从前端展示到后台数据交互流程的具体demo
+
+[WiFiProbeAnalysis](https://github.com/wanghan0501/WiFiProbeAnalysis)
